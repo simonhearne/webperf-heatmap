@@ -1,0 +1,80 @@
+<html>
+    <head>
+        <style>
+            html, body {
+                font-family: sans-serif;
+            }
+            .container {
+                width:100%;
+                padding: 5px;
+                max-width:960px;
+                margin:0 auto;
+            }
+            .heatmap-container {
+                margin:5px;
+                position:relative;
+                top:0;
+                left:0;
+            }
+            #img-heatmap-overlay {
+                position:absolute;
+                opacity:0.9;
+                filter: blur(2px);
+            }
+            #img-heatmap-final-frame {
+                filter: grayscale(90%);
+            }
+            .img-heatmap {
+                top:0;
+                left:0;
+                width:100%;
+            }
+            input[type=range] {
+                width:100%;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="heatmap-container">
+                <img src="" id="img-heatmap-final-frame" class="img-heatmap"/>
+                <img src="" id="img-heatmap-overlay" class="img-heatmap"/>
+            </div>
+            <div class="heatmap-controls">
+                <label for="heatmap-control-opacity">Heatmap Opacity:</label>
+                <input id="heatmap-control-opacity" name="heatmap-control-opacity" type="range" min="0" max="1" step="0.01" value="0.90"></input>
+                <label for="heatmap-control-gray">Screenshot Saturation:</label>
+                <input id="heatmap-control-gray" name="heatmap-control-gray" type="range" min="0" max="100" step="1" value="10"></input>
+            </div>
+        </div>
+        <script>
+            const getParameterByName = function(name, url) {
+                if (!url) url = window.location.href;
+                name = name.replace(/[\[\]]/g, "\\$&");
+                var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                    results = regex.exec(url);
+                if (!results) return null;
+                if (!results[2]) return '';
+                return decodeURIComponent(results[2].replace(/\+/g, " "));
+            }
+            const loadImages = function () {
+                document.getElementById("img-heatmap-final-frame").src = `tests/${window.heatmap.testId}/final.jpg`;
+                document.getElementById("img-heatmap-overlay").src = `tests/${window.heatmap.testId}/heatmap.png`;
+            }
+            const updateOpacity = function() {
+                let opacity = document.getElementById('heatmap-control-opacity').value;
+                document.getElementById("img-heatmap-overlay").style.opacity = opacity;
+            };
+            const updateGrayscale = function() {
+                let gray = 100-document.getElementById('heatmap-control-gray').value;
+                document.getElementById("img-heatmap-final-frame").style.filter = `grayscale(${gray}%)`;
+            };
+
+            document.getElementById("heatmap-control-opacity").addEventListener('input',updateOpacity);
+            document.getElementById("heatmap-control-gray").addEventListener('input',updateGrayscale);
+            window.heatmap = {testId:null};
+            window.heatmap.testId = getParameterByName('test');
+            loadImages();
+        </script>
+    </body>
+</html>

@@ -1,0 +1,26 @@
+{
+  "name": "webperf-heatmap",
+  "version": "1.0.0",
+  "description": "Generates heatmap images from WebPageTest filmstrips",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "@SimonHearne",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/simonhearne/webperf-heatmap.git"
+  },
+  "dependencies": {
+    "adm-zip": "^0.4.7",
+    "fs": "0.0.1-security",
+    "fs-extra": "^5.0.0",
+    "get-pixels": "^3.3.0",
+    "ndarray": "^1.0.18",
+    "ndarray-fill": "^1.0.2",
+    "save-pixels": "^2.3.4",
+    "webpagetest": "git+https://git@github.com/simonhearne/webpagetest-api.git",
+    "zeros": "^1.0.0"
+  }
+}
