@@ -45,9 +45,9 @@
             </div>
             <div id="heatmap-controls">
                 <label for="heatmap-control-opacity">Heatmap Opacity: <span id="heatmap-control-opacity-value"></span></label>
-                <input id="heatmap-control-opacity" name="heatmap-control-opacity" type="range" min="0" max="1" step="0.01" value="0.90"></input>
+                <input id="heatmap-control-opacity" name="heatmap-control-opacity" type="range" min="0" max="1" step="0.1" value="0.90"></input>
                 <label for="heatmap-control-gray">Screenshot Saturation: <span id="heatmap-control-gray-value"></span></label>
-                <input id="heatmap-control-gray" name="heatmap-control-gray" type="range" min="0" max="100" step="1" value="10"></input>
+                <input id="heatmap-control-gray" name="heatmap-control-gray" type="range" min="0" max="100" step="10" value="10"></input>
                 <label for="heatmap-control-budget">Visual Budget: <span id="heatmap-control-budget-value"></span></label>
                 <input id="heatmap-control-budget" name="heatmap-control-budget" type="range" min="0" max="60000" step="100" value="3000"></input>
             </div>
@@ -118,18 +118,19 @@
                 }
             }
             const hueFromBudget = function(budget,time) {
-                maxHue = -60;
-                minHue = 60;
+                let maxHue = -60;
+                let minHue = 60;
                 if (time == 0) {
                     hue = minHue;
                 } else if (time >= budget) {
                     hue = maxHue;
                 } else {
-                    hue = minHue - (minHue * time / budget);
+                    var f = time / budget;
+                    hue = 60 - f * 120;
                 }
                 return hue;
             }
-            var live_updates = false;
+            var live_updates = true;
             var eventListenerType = (live_updates?'input':'change');
             document.getElementById("heatmap-control-opacity").addEventListener(eventListenerType,updateOpacity);
             document.getElementById("heatmap-control-gray").addEventListener(eventListenerType,updateGrayscale);
