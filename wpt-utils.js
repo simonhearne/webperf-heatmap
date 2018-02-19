@@ -4,6 +4,12 @@ const webpagetest = require('webpagetest');
 const heatmap = require('./heatmap');
 const admzip = require('adm-zip');
 
+/* For submitting tests:
+ * set screenshot size to full (probably new code in WPT-api)
+ * set image quality to 100
+ * set desktop resolution to something reasonable?
+*/
+
 module.exports = function wptUtils(testId) {
     const testsDir = 'tests';
     const wpt = new webpagetest();
@@ -34,16 +40,9 @@ module.exports = function wptUtils(testId) {
             if (err) throw new Error(err);
             let zip = new admzip(data);
             zip.extractAllTo(tmpdir,true);
-            generateHeatmap(dir,tmpdir);
+            heatmap(tmpdir,dir).then(()=>{
+                fs.removeSync(tmpdir);
+            });
         });
     }
-
-    const generateHeatmap = function(dir,tmpdir) {
-        heatmap(tmpdir,10000,path.join(dir,'heatmap.png')).then((filenames)=>{
-            fs.createReadStream(filenames.finalFrame).pipe(fs.createWriteStream(path.join(dir,'final.jpg')));
-            fs.removeSync(tmpdir);
-            return dir;
-        })
-    }
-
 }
