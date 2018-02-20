@@ -7,7 +7,7 @@ const path = require("path");
 
 var result;
 
-const compareImages = function(testFrame,finalFramePixels,ms,outputPath,isFinal=false,threshold=0.1) {
+const compareImages = function(testFrame,finalFramePixels,ms,outputPath,isFinal=false,threshold=0) {
     return new Promise((resolve,reject) => {
         getPixels(testFrame, function(err, testPixels) {
             if (err) {
@@ -19,7 +19,7 @@ const compareImages = function(testFrame,finalFramePixels,ms,outputPath,isFinal=
                         diff = false;
                         diffcheck:
                         for (let i=0;i<3;i++) {
-                            if (isFinal || Math.abs(testPixels.get(x,y,i)-finalFramePixels.get(x,y,i)) < testPixels.get(x,y,i)*threshold) {
+                            if (isFinal || Math.abs(testPixels.get(x,y,i)-finalFramePixels.get(x,y,i)) <= threshold) {
                                 result.set(x,y,0,200);
                                 result.set(x,y,1,200);
                                 result.set(x,y,2,0);
