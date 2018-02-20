@@ -3,129 +3,43 @@ const getPixels = require("get-pixels");
 const savePixels = require("save-pixels");
 const zeros = require("zeros");
 const fs = require("fs");
+const path = require("path");
 
 var result;
 
-const createMask = function(image,result) {
+const compareImages = function(testFrame,finalFramePixels,ms,outputPath,isFinal=false,threshold=0.1) {
     return new Promise((resolve,reject) => {
-        getPixels(image,function(err,pixels) {
+        getPixels(testFrame, function(err, testPixels) {
             if (err) {
                 return reject(err);
             } else {
-                result = zeros([pixels.shape[0],pixels.shape[1],4]);
-                return resolve(result);
-            }
-        });
-    });
-}
-
-const compareImages = function(result,image1,image2,color=[255,255,255],threshold=0.1) {
-    return new Promise((resolve,reject) => {
-        getPixels(image1, function(err, pixels1) {
-            getPixels(image2, function(err, pixels2) {
-                if (err) {
-                    return reject(err);
-                } else {
-                    result = compareArrays(result,pixels1,pixels2,color,threshold);
-                    return resolve(result);
+                result = zeros([finalFramePixels.shape[0],finalFramePixels.shape[1],4]);
+                for (let x=0; x<result.shape[0]; x++) {
+                    for (let y=0; y<result.shape[1]; y++) {
+                        diff = false;
+                        diffcheck:
+                        for (let i=0;i<3;i++) {
+                            if (isFinal || Math.abs(testPixels.get(x,y,i)-finalFramePixels.get(x,y,i)) < testPixels.get(x,y,i)*threshold) {
+                                result.set(x,y,0,127);
+                                result.set(x,y,1,127);
+                                result.set(x,y,2,0);
+                                result.set(x,y,3,255);
+                                break diffcheck;
+                            }
+                        }
+                    }
                 }
-            })
+                saveArray(result,path.join(outputPath,`${ms}.png`));
+                resolve();
+            }
         })
     })
 }
 
-const compareArrays = function(result,array1,array2,color,threshold) {
-    a = 255;
-    for (let x=0; x<array1.shape[0]; x++) {
-        for (let y=0; y<array1.shape[1]; y++) {
-            diff = false;
-            diffcheck: for (let i=0;i<3;i++) {
-                if (Math.abs(array1.get(x,y,i)-array2.get(x,y,i)) > array1.get(x,y,i)*threshold) {
-                    diff = true;
-                    break diffcheck;
-                }
-            }
-            if (diff) {
-                result.set(x,y,0,color[0]);
-                result.set(x,y,1,color[1]);
-                result.set(x,y,2,color[2]);
-                result.set(x,y,3,a);
-            }
-        }
-    }
-    return result;
-}
-
 const msFromFilename = function(filename) {
-    // Kinda specific here...
     let start = filename.indexOf("_")+1;
     let end = filename.indexOf(".")
     return parseInt(filename.slice(start,end));
-}
-
-const colorFromBudget = function(budget,time) {
-    let hue = 0;
-    if (time > budget) {
-        hue = 0;
-    } else if (time == 0) {
-        hue = 120;
-    } else {
-        let offset = time / budget;
-        hue = 120-(120*offset);
-    }
-    return hsl2rgb(hue,0.9,0.4);
-}
-
-const hsl2rgb = function(hue, saturation, lightness){
-    if( hue == undefined ){
-      return [0, 0, 0];
-    }
-  
-    var chroma = (1 - Math.abs((2 * lightness) - 1)) * saturation;
-    var huePrime = Math.floor(hue / 60);
-    var secondComponent = chroma * (1 - Math.abs((huePrime % 2) - 1));
-  
-    var red;
-    var green;
-    var blue;
-  
-    if( huePrime === 0 ){
-      red = chroma;
-      green = secondComponent;
-      blue = 0;
-    }else if( huePrime === 1 ){
-      red = secondComponent;
-      green = chroma;
-      blue = 0;
-    }else if( huePrime === 2 ){
-      red = 0;
-      green = chroma;
-      blue = secondComponent;
-    }else if( huePrime === 3 ){
-      red = 0;
-      green = secondComponent;
-      blue = chroma;
-    }else if( huePrime === 4 ){
-      red = secondComponent;
-      green = 0;
-      blue = chroma;
-    }else if( huePrime === 5 ){
-      red = chroma;
-      green = 0;
-      blue = secondComponent;
-    }
-  
-    var lightnessAdjustment = lightness - (chroma / 2);
-    red += lightnessAdjustment;
-    green += lightnessAdjustment;
-    blue += lightnessAdjustment;
-  
-    return [Math.round(red * 255), Math.round(green * 255), Math.round(blue * 255)];
-  
-  };
-
-const pathJoin = function(path,fn) {
-    return path+"/"+fn;
 }
 
 const imageSort = function(a,b) {
@@ -161,32 +75,27 @@ const getImageArrayFromDirectory = function(directory) {
     return imageArray;
 }
 
-module.exports = function generateHeatmapFromFrames(imagePath,budget,outputFilename) {
+module.exports = function generateHeatmapFrames(imagePath,outputPath) {
     return new Promise((resolve,reject)=>{
-        outputFilename = (outputFilename == undefined ? `${imagePath}_heatmap.png`: outputFilename);
+        outputPath = (outputPath == undefined ? '': outputPath);
         let frames = getImageArrayFromDirectory(imagePath);
-        let finalFrame = pathJoin(imagePath,frames.pop());
-
-        createMask(finalFrame).then((result)=>{
-            let chain = Promise.resolve();
+        let finalFrame = path.join(imagePath,frames.slice(-1).pop());
+        getPixels(finalFrame, function(err, finalFramePixels) {
+            if (err) throw new Error(err);
+            result = zeros([finalFramePixels.shape[0],finalFramePixels.shape[1],4]);
+            let comparisons = [];
+            frameJSON = []
             for (let i in frames) {
-                let fn = pathJoin(imagePath,frames[i]);
-                let ms = msFromFilename(frames[i]);
-                let color = colorFromBudget(budget,ms);
-                chain = chain
-                    .then((next_result)=>{
-                        if (next_result) {
-                            return compareImages(next_result,finalFrame,fn,color);
-                        } else {
-                            return compareImages(result,finalFrame,fn,color);
-                        }
-                    }
-                );
+                let isFinal = (i==frames.length-1?true:false);
+                var imageFn = path.join(imagePath,frames[i]);
+                var ms = msFromFilename(frames[i]);
+                frameJSON.push({time:ms,frame:path.join(outputPath,`${ms}.png`)});
+                comparisons.push(compareImages(imageFn,finalFramePixels,ms,outputPath,isFinal));
             }
-            chain.then((final_result)=>{
-                filestream = saveArray(final_result,outputFilename);
-            }).then(()=>{
-                return resolve({outputFilename:outputFilename,finalFrame:finalFrame});
+            fs.writeFileSync(path.join(outputPath,'frames.json'),JSON.stringify(frameJSON));
+            fs.createReadStream(finalFrame).pipe(fs.createWriteStream(path.join(outputPath,'final.jpg')));
+            Promise.all(comparisons).then(()=>{
+                resolve(true);
             })
         })
     })
