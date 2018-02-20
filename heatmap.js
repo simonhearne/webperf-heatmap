@@ -7,7 +7,7 @@ const path = require("path");
 
 var result;
 
-const compareImages = function(testFrame,finalFramePixels,ms,outputPath,threshold=0.1) {
+const compareImages = function(testFrame,finalFramePixels,ms,outputPath,isFinal=false,threshold=0.1) {
     return new Promise((resolve,reject) => {
         getPixels(testFrame, function(err, testPixels) {
             if (err) {
@@ -19,7 +19,7 @@ const compareImages = function(testFrame,finalFramePixels,ms,outputPath,threshol
                         diff = false;
                         diffcheck:
                         for (let i=0;i<3;i++) {
-                            if (Math.abs(testPixels.get(x,y,i)-finalFramePixels.get(x,y,i)) > testPixels.get(x,y,i)*threshold) {
+                            if (isFinal || Math.abs(testPixels.get(x,y,i)-finalFramePixels.get(x,y,i)) < testPixels.get(x,y,i)*threshold) {
                                 result.set(x,y,0,127);
                                 result.set(x,y,1,127);
                                 result.set(x,y,2,0);
@@ -79,17 +79,18 @@ module.exports = function generateHeatmapFrames(imagePath,outputPath) {
     return new Promise((resolve,reject)=>{
         outputPath = (outputPath == undefined ? '': outputPath);
         let frames = getImageArrayFromDirectory(imagePath);
-        let finalFrame = path.join(imagePath,frames.pop());
+        let finalFrame = path.join(imagePath,frames.slice(-1).pop());
         getPixels(finalFrame, function(err, finalFramePixels) {
             if (err) throw new Error(err);
             result = zeros([finalFramePixels.shape[0],finalFramePixels.shape[1],4]);
             let comparisons = [];
             frameJSON = []
             for (let i in frames) {
+                let isFinal = (i==frames.length-1?true:false);
                 var imageFn = path.join(imagePath,frames[i]);
                 var ms = msFromFilename(frames[i]);
                 frameJSON.push({time:ms,frame:path.join(outputPath,`${ms}.png`)});
-                comparisons.push(compareImages(imageFn,finalFramePixels,ms,outputPath));
+                comparisons.push(compareImages(imageFn,finalFramePixels,ms,outputPath,isFinal));
             }
             console.log(frameJSON);
             fs.writeFileSync(path.join(outputPath,'frames.json'),JSON.stringify(frameJSON));
