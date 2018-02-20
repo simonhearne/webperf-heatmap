@@ -12,6 +12,8 @@ let testIds = [
     "180220_R9_9f8c3a8e7cb713dc79141645f3e1e313" // ferrari
 ];
 for (var i in testIds) {
-    console.log(testIds[i]);
-    wptutils(testIds[i]);
+    console.log("Submitting",testIds[i]);
+    wptutils(testIds[i]).then(()=>{
+        console.log("Complete",testIds[i]);
+    });
 }
