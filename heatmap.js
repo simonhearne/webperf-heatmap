@@ -92,11 +92,9 @@ module.exports = function generateHeatmapFrames(imagePath,outputPath) {
                 frameJSON.push({time:ms,frame:path.join(outputPath,`${ms}.png`)});
                 comparisons.push(compareImages(imageFn,finalFramePixels,ms,outputPath,isFinal));
             }
-            console.log(frameJSON);
             fs.writeFileSync(path.join(outputPath,'frames.json'),JSON.stringify(frameJSON));
             fs.createReadStream(finalFrame).pipe(fs.createWriteStream(path.join(outputPath,'final.jpg')));
             Promise.all(comparisons).then(()=>{
-                console.log("All done!");
                 resolve(true);
             })
         })
