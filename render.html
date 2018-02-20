@@ -83,7 +83,7 @@
                 
                 var heatmapOverlayContainer = document.createElement('div');
                 heatmapOverlayContainer.id="heatmap-overlay-container";
-                for (var i in window.heatmap.frames) {
+                for (var i=window.heatmap.frames.length-1;i>=0;i--) {
                     var img = document.createElement("img");
                     img.className="img-heatmap img-heatmap-overlay";
                     img.id = `img-heatmap-overlay-${window.heatmap.frames[i].time}`
