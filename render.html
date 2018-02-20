@@ -6,12 +6,13 @@
             }
             .container {
                 width:100%;
-                padding: 5px;
                 max-width:960px;
                 margin:0 auto;
             }
+            #heatmap-controls-labels {
+                text-align:right;  
+            }
             #heatmap-container {
-                margin:5px;
                 position:relative;
                 top:0;
                 left:0;
@@ -24,6 +25,22 @@
             }
             #img-heatmap-final-frame {
                 filter: grayscale(90%);
+            }
+            #heatmap-controls-values span {
+                font-style: italic;
+                font-size: 120%;
+                font-family: monospace;
+            }
+            #heatmap-controls {
+                display: grid;
+                grid-template-columns: max-content 1fr max-content;
+                justify-content: start;
+                grid-gap: 10px;
+                padding-top: 10px;
+                margin: 0 20px;
+            }
+            #heatmap-controls div {
+                padding:2px;
             }
             .img-heatmap {
                 top:0;
@@ -43,12 +60,21 @@
             <div id="heatmap-container">
             </div>
             <div id="heatmap-controls">
-                <label for="heatmap-control-opacity">Heatmap Opacity: <span id="heatmap-control-opacity-value"></span></label>
-                <input id="heatmap-control-opacity" name="heatmap-control-opacity" type="range" min="0" max="1" step="0.01" value="0.95"></input>
-                <label for="heatmap-control-gray">Screenshot Saturation: <span id="heatmap-control-gray-value"></span></label>
-                <input id="heatmap-control-gray" name="heatmap-control-gray" type="range" min="0" max="100" step="10" value="10"></input>
-                <label for="heatmap-control-budget">Visual Budget: <span id="heatmap-control-budget-value"></span></label>
-                <input id="heatmap-control-budget" name="heatmap-control-budget" type="range" min="100" max="60000" step="100" value=""></input>
+                <div id="heatmap-controls-labels">
+                        <label id="heatmap-control-budget-label" for="heatmap-control-budget">Visual Budget: </label><br/>
+                    <label id="heatmap-control-opacity-label" for="heatmap-control-opacity">Heatmap Opacity: </label><br/>
+                    <label id="heatmap-control-gray-label" for="heatmap-control-gray">Screenshot Saturation: </label><br/>
+                </div>
+                <div id="heatmap-controls-sliders">
+                    <input id="heatmap-control-budget" name="heatmap-control-budget" type="range" min="100" max="60000" step="100" value=""></input>
+                    <input id="heatmap-control-opacity" name="heatmap-control-opacity" type="range" min="0" max="1" step="0.01" value="0.95"></input>
+                    <input id="heatmap-control-gray" name="heatmap-control-gray" type="range" min="0" max="100" step="10" value="10"></input>
+                </div>
+                <div id="heatmap-controls-values">
+                        <span class="heatmap-control-value" id="heatmap-control-budget-value"></span><br/>
+                    <span class="heatmap-control-value" id="heatmap-control-opacity-value"></span><br/>
+                    <span class="heatmap-control-value" id="heatmap-control-gray-value"></span><br/>
+                </div>
             </div>
         </div>
         <script>
