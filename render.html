@@ -17,7 +17,7 @@
                 left:0;
             }
             #heatmap-overlay-container {
-                opacity:0.9;
+                opacity:1;
             }
             .img-heatmap-overlay {
                 position:absolute;
@@ -44,11 +44,11 @@
             </div>
             <div id="heatmap-controls">
                 <label for="heatmap-control-opacity">Heatmap Opacity: <span id="heatmap-control-opacity-value"></span></label>
-                <input id="heatmap-control-opacity" name="heatmap-control-opacity" type="range" min="0" max="1" step="0.1" value="0.90"></input>
+                <input id="heatmap-control-opacity" name="heatmap-control-opacity" type="range" min="0" max="1" step="0.01" value="0.95"></input>
                 <label for="heatmap-control-gray">Screenshot Saturation: <span id="heatmap-control-gray-value"></span></label>
                 <input id="heatmap-control-gray" name="heatmap-control-gray" type="range" min="0" max="100" step="10" value="10"></input>
                 <label for="heatmap-control-budget">Visual Budget: <span id="heatmap-control-budget-value"></span></label>
-                <input id="heatmap-control-budget" name="heatmap-control-budget" type="range" min="0" max="60000" step="100" value="3000"></input>
+                <input id="heatmap-control-budget" name="heatmap-control-budget" type="range" min="100" max="60000" step="100" value=""></input>
             </div>
         </div>
         <script>
@@ -106,6 +106,8 @@
             const updateBudget = function() {
                 window.heatmap.budget = parseInt(document.getElementById("heatmap-control-budget").value);
                 document.getElementById("heatmap-control-budget-value").innerHTML = `${window.heatmap.budget.toLocaleString()}ms`;
+                window.heatmap.maxTime = window.heatmap.budget;
+                window.heatmap.minTime = window.heatmap.budget/2;
                 updateColors();
             }
 
@@ -119,25 +121,29 @@
             const hueFromBudget = function(budget,time) {
                 let maxHue = -60;
                 let minHue = 60;
-                if (time == 0) {
+                if (time < window.heatmap.minTime) {
                     hue = minHue;
-                } else if (time >= budget) {
+                } else if (time >= window.heatmap.maxTime) {
                     hue = maxHue;
                 } else {
-                    var f = time / budget;
-                    hue = 60 - f * 120;
+                    var f = (time-window.heatmap.minTime)/(window.heatmap.maxTime-window.heatmap.minTime);
+                    hue = minHue - f * (minHue-maxHue);
                 }
+                console.log(time,window.heatmap.minTime,window.heatmap.maxTime,hue);
+                
                 return hue;
             }
             var live_updates = true;
+            window.heatmap = {testId:null,frames:[]};
+            window.heatmap.testId = getParameterByName('test');
+            var budget = getParameterByName('budget');
+            if (budget !== undefined) {
+                document.getElementById("heatmap-control-budget").value = parseInt(budget);
+            }
             var eventListenerType = (live_updates?'input':'change');
             document.getElementById("heatmap-control-opacity").addEventListener(eventListenerType,updateOpacity);
             document.getElementById("heatmap-control-gray").addEventListener(eventListenerType,updateGrayscale);
             document.getElementById("heatmap-control-budget").addEventListener(eventListenerType,updateBudget);
-            window.heatmap = {testId:null,frames:[]};
-            window.heatmap.testId = getParameterByName('test');
-            var budget = getParameterByName('budget');
-            window.heatmap.budget = (budget !== null?budget:3000)
             loadImages();
         </script>
     </body>

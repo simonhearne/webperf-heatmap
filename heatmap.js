@@ -20,8 +20,8 @@ const compareImages = function(testFrame,finalFramePixels,ms,outputPath,isFinal=
                         diffcheck:
                         for (let i=0;i<3;i++) {
                             if (isFinal || Math.abs(testPixels.get(x,y,i)-finalFramePixels.get(x,y,i)) < testPixels.get(x,y,i)*threshold) {
-                                result.set(x,y,0,127);
-                                result.set(x,y,1,127);
+                                result.set(x,y,0,200);
+                                result.set(x,y,1,200);
                                 result.set(x,y,2,0);
                                 result.set(x,y,3,255);
                                 break diffcheck;
