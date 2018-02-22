@@ -1,0 +1,52 @@
+html, body {
+    font-family: sans-serif;
+}
+.container {
+    width:100%;
+    max-width:960px;
+    margin:0 auto;
+}
+#heatmap-controls-labels {
+    text-align:right;  
+}
+#heatmap-container {
+    position:relative;
+    top:0;
+    left:0;
+}
+#heatmap-overlay-container {
+    opacity:1;
+}
+.img-heatmap-overlay {
+    position:absolute;
+}
+#img-heatmap-final-frame {
+    filter: grayscale(90%);
+}
+#heatmap-controls-values span {
+    font-style: italic;
+    font-size: 120%;
+    font-family: monospace;
+}
+#heatmap-controls {
+    display: grid;
+    grid-template-columns: max-content 1fr max-content;
+    justify-content: start;
+    grid-gap: 10px;
+    padding-top: 10px;
+    margin: 0 20px;
+}
+#heatmap-controls div {
+    padding:2px;
+}
+.img-heatmap {
+    top:0;
+    left:0;
+    width:100%;
+}
+input[type=range] {
+    width:100%;
+}
+label {
+    font-weight: bold;
+}
