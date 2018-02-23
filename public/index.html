@@ -1,0 +1,103 @@
+<html>
+    <head>
+        <title>Web Performance Heatmap Generator</title>
+        <script src="js/main.js" defer></script>
+        <style>
+            html,body,input,select,button {
+                font-family: sans-serif;
+                font-size:16px;
+            }
+            html,body {
+                line-height:1.4em;
+            }
+            #container {
+                margin: 0 auto;
+                padding:10px;
+                width: 100%;
+                max-width: 960px;
+            }
+            .form-group {
+                margin-top:5px;
+                padding: 5px;
+            }
+            select {
+                width: 100%;
+            }
+            button.button-lg {
+                padding:8px 10px;
+                width: 100%;
+                background-color:white;
+                border-radius: 8px;
+                cursor:pointer;
+            }
+            button:focus {
+                outline:0;
+            }
+            button:hover {
+                box-shadow:0px 0px 2px gray inset;
+            }
+            button:active {
+                box-shadow:0px 0px 2px green inset;
+            }
+            input[type="url"] {
+                width: 100%;
+            }
+            #status {
+                border-radius: 8px;
+                padding:8px 10px;
+                width:100%;
+            }
+            #status.error {
+                border:1px solid hsla(0,50%,50%,0.9);
+                background-color: hsla(0,50%,50%,0.1);
+            }
+            #status.info {
+                border:1px solid hsla(60,50%,50%,0.9);
+                background-color: hsla(60,50%,50%,0.1);
+            }
+            #status.success {
+                border:1px solid hsla(120,50%,50%,0.9);
+                background-color: hsla(120,50%,50%,0.1);
+            }
+        </style>
+    </head>
+    <body>
+        <div id="container">
+            <div id="form">
+                <form id="submission-form">
+                    <div class="form-group">
+                        <label for="url">URL to test:</label>
+                        <input type="url" id="url" name="url"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="wpt-host">WebPageTest server:</label>
+                        <input name="wpt-host" id="wpt-host" type="text" value="www.webpagetest.org"></input><br/>
+                    </div>
+                    <div class="form-group">
+                        <label for="wpt-location">WebPageTest location:</label>
+                        <select name="wpt-location" id="wpt-location"></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="wpt-browser">WebPageTest browser:</label>
+                        <select name="wpt-browser" id="wpt-browser"></select>
+                    </div>
+                    <div class="form-group">
+                        <button type="button" class="button-lg" id="button-submit">Generate heatmap!</button>
+                    </div>
+                </form>
+            </div>
+            <div id="status">
+
+            </div>
+        </div>
+        <script>
+            window.onload = () => {
+                window.wpt={};
+                document.getElementById("wpt-host").addEventListener('blur',getLocations);
+                document.getElementById("wpt-location").addEventListener('change',updateBrowsers);
+                getLocations();
+                document.getElementById("button-submit").addEventListener("click", submitTest);
+            }
+        </script>
+    </body>
+</html>
