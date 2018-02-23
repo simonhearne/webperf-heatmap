@@ -56,12 +56,15 @@ app.listen(port, () => {
         }
     })
     app.post('/submit', (req, res) => {
-        console.log(req.query);
-        if (!req.body.url) {
+        console.log(req.body);
+        if (!(req.body.url && req.body.server && req.body.location && req.body.server)) {
             res.json(errMsg);
         } else {
             let url = req.body.url;
-            wptutils.submitTest(testId).then((response)=>{
+            let server = req.body.host;
+            let location = req.body.server+":"+req.body.location;
+            //res.json({url:url,server:server,location:location});
+            wptutils.submitTest(url,server,location).then((response)=>{
                 res.json(response);
             })
         }

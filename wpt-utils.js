@@ -5,6 +5,7 @@ const heatmap = require('./heatmap');
 const admzip = require('adm-zip');
 
 const defaultServer = 'www.webpagetest.org';
+const wptAPIkey = '6d00ee2d01d64f87890cb0f5d724d0f6';
 
 /* For submitting tests:
  * set screenshot size to full (probably new code in WPT-api)
@@ -22,10 +23,20 @@ getStatus = function(testId) {
     })
 }
 
-submitTest = function(url,server,location,opts) {
-    let iq = (opts.iq==undefined?100:opts.iq);
-    let res = (opts.res==undefined?"1280*1024":opts.res);
-    /* ---- */
+submitTest = function(url,server=null,location=null,opts=null) {
+    return new Promise((resolve) => {
+        server = (server==null?defaultServer:server);
+        let iq = 100;
+        const wpt = new webpagetest(server);
+        if (opts) {
+            let iq = (opts.iq==undefined?100:opts.iq);
+        }
+        wpt.runTest(url, {location:location,disableOptimization:true,jpegQuality:iq,video:true,key:wptAPIkey}, (err, data) => {
+            console.log(err || data);
+            if (err) throw new Error(err);
+            return resolve(data);
+        });
+    })
 }
 
 getResultSummary = function(testId,server=null,requests=false) {
