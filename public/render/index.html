@@ -13,7 +13,7 @@
     <body>
         <div id="container">
             <div id="header">
-                <h1>Web Performance Heatmap Generator</h1>
+                <h1 id="home-link" class="clicky">Web Performance Heatmap Generator</a></h1>
                 <h3><span id="test-url"></span></h3>
                 <p class="subtitle"><span class="test-details" id="test-from"></span> on <span class="test-details" id="test-run-at"></span>. <span id="test-link"></span></p>
             </div>
@@ -36,6 +36,9 @@
                     <span class="heatmap-control-value" id="heatmap-control-gray-value"></span><br/>
                 </div>
             </div>
+            <div id="footer">
+                Made by <a href="https://twitter.com/simonhearne">Simon</a> • Fork on <a href="https://github.com/simonhearne/webperf-heatmap">GitHub</a>
+            </div>
         </div>
         <script>
             window.onload = () => {
@@ -53,6 +56,7 @@
                 document.getElementById("heatmap-control-gray").addEventListener(eventListenerType,updateGrayscale);
                 document.getElementById("heatmap-control-budget").addEventListener(eventListenerType,updateBudget);
                 document.getElementById("heatmap-control-play").addEventListener("click",scrollyBudget);
+                document.getElementById("home-link").addEventListener("click",()=>{window.location = "/" });
                 
                 loadImages();
                 getTestInfo(window.heatmap.testId);

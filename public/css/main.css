@@ -37,6 +37,12 @@ h1,h3 {
     background-color:white;
     border-radius:5px;
 }
+#footer {
+    font-size: 13px;
+    text-align: center;
+    padding-top: 5px;
+    margin-bottom: -5px;
+}
 .form-group {
     margin-top:5px;
     padding: 5px;
@@ -104,7 +110,7 @@ input.narrow {
     font-family:'Courier New', Courier, monospace;
 }
 label {
-    font-weight:400;
+    font-weight: 300;
     font-size:15px;
 }
 #status.error {
@@ -149,11 +155,8 @@ label {
     position:relative;
     top:0;
     left:0;
-    /* width: 100px; */
-    /* height: 25vh; */
-    /* max-height: 800px; */
-    /* max-width: 960px; */
-    /* margin: 0 auto; */
+    width: 100%;
+    margin: 0 auto;
 }
 #heatmap-overlay-container {
     opacity:1;
