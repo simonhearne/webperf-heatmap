@@ -49,7 +49,14 @@
                     alert("No test parameter provided, maybe a bad link?\nSending you back to the homepage.");
                     window.location.href = window.location.href.substring(0,window.location.href.lastIndexOf("/")).replace("render","");
                 }
-                var budget = (getParameterByName('budget')==undefined?5000:getParameterByName('budget'));
+                /* if budget param is set - use that, else 5000. Later we'll update it with the speedindex value */
+                let budget = 5000;
+                window.heatmap.budgetSet = true;
+                if (getParameterByName('budget') != undefined) {
+                    budget = parseInt(getParameterByName('budget'));
+                } else {
+                    window.heatmap.budgetSet = false;
+                }
                 document.getElementById("heatmap-control-budget").value = parseInt(budget);
                 var eventListenerType = (live_updates?'input':'change');
                 document.getElementById("heatmap-control-opacity").addEventListener(eventListenerType,updateOpacity);

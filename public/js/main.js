@@ -288,11 +288,17 @@ const getTestInfo = function(test=null) {
 }
 
 const parseResults = function(data) {
+    let speedindex = parseInt(data.data.median.firstView.SpeedIndex);
     document.getElementById("test-url").innerHTML = data.data.testUrl;
     document.getElementById("test-from").innerHTML = data.data.from.replace(/<b>/gi,"").replace(/<\/b>/gi,"");
     let d = new Date(data.data.completed * 1000);
     document.getElementById("test-run-at").innerHTML = d.toLocaleString();
     document.getElementById("test-link").innerHTML = `<a href="${data.data.summary}" target="_blank">View on WPT</a>`;
+    if (!window.heatmap.budgetSet) {
+        console.log("SI:",speedindex);
+        document.getElementById("heatmap-control-budget").value=speedindex;
+        updateBudget();
+    }
 }
 
 const scrollyBudget = function() {
