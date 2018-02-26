@@ -1,10 +1,146 @@
-html, body {
-    font-family: sans-serif;
+html,body,input,select,button {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size:16px;
+    font-weight:300;
+    line-height:1.4em;
 }
-.container {
-    width:100%;
-    max-width:960px;
-    margin:0 auto;
+html,body {
+    line-height:1.4em;
+    background-color: rgba(0,0,0,0.05);
+}
+body {
+    padding:10px;
+    margin:0;
+}
+html {
+    padding: 0;
+}
+h1,h3 {
+    font-weight:300;
+    text-align:center;
+}
+@media screen and (min-width: 1070px) {
+    body {
+        zoom: 1.2;
+    }
+}
+@media screen and (max-width: 680px) {
+    h1 {
+        font-size:24px;
+    }
+}
+#container {
+    margin: 20px auto;
+    padding: 10px 20px 16px 20px;
+    max-width: 800px;
+    box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+    background-color:white;
+    border-radius:5px;
+}
+.form-group {
+    margin-top:5px;
+    padding: 5px;
+}
+.form-subgroup {
+    width: 100%;
+    /* float:right; */
+}
+.clicky {
+    cursor: pointer;
+}
+.test-details {
+    font-weight:400;
+}
+.subtitle {
+    text-align:center;
+}
+select {
+    width: 100%;
+}
+button.button-lg {
+    margin-top:20px;
+    padding:8px 10px;
+    width: 100%;
+    font-size:115%;
+}
+button {
+    background-color:white;
+    border-radius: 5px;
+    cursor:pointer;
+}
+button:focus {
+    outline:0;
+}
+button:hover {
+    box-shadow:0px 0px 4px #ccc inset;
+}
+button:active {
+    box-shadow:0px 0px 4px green inset;
+}
+input.wide {
+    padding-left:5px;
+    width: 100%;
+}
+input.error {
+    border-color:red;
+    box-shadow: 0px 0px 2px red;
+}
+input:not([type=range]), select {
+    box-shadow: 0px 0px 2px #ccc inset;
+    border: 1px solid #ccc;
+    height:2em;
+    border-radius: 5px;
+}
+input.narrow {
+    height: 1.7em;
+    margin-left:5px;
+    margin-right:5px;
+    width: 75%;
+}
+#status {
+    border-radius: 5px;
+    padding:8px 10px;
+    margin:5px;
+    font-family:'Courier New', Courier, monospace;
+}
+label {
+    font-weight:400;
+    font-size:15px;
+}
+#status.error {
+    border:1px solid hsla(0,50%,50%,0.9);
+    background-color: hsla(0,50%,50%,0.1);
+    color: hsla(0,50%,20%,1);
+}
+#status.info {
+    border:1px solid hsla(240,50%,50%,0.9);
+    background-color: hsla(240,50%,50%,0.1);
+    color: hsla(240,50%,20%,1);
+}
+#status.warning {
+    border:1px solid hsla(60,50%,50%,0.9);
+    background-color: hsla(60,50%,50%,0.1);
+    color: hsla(60,50%,20%,1);
+}
+#status.success {
+    border:1px solid hsla(120,50%,50%,0.9);
+    background-color: hsla(120,50%,50%,0.1);
+    color: hsla(120,50%,20%,1);
+}
+.hidden {
+    visibility:hidden;
+    display:none;
+}
+.half-col {
+    float:left;
+    width:48%;
+    width:calc(50% - 10px);
+}
+@media screen and (max-width: 540px) {
+    .half-col {
+        float:none;
+        width:100%;
+    }
 }
 #heatmap-controls-labels {
     text-align:right;  
@@ -13,6 +149,11 @@ html, body {
     position:relative;
     top:0;
     left:0;
+    /* width: 100px; */
+    /* height: 25vh; */
+    /* max-height: 800px; */
+    /* max-width: 960px; */
+    /* margin: 0 auto; */
 }
 #heatmap-overlay-container {
     opacity:1;
@@ -24,9 +165,7 @@ html, body {
     filter: grayscale(90%);
 }
 #heatmap-controls-values span {
-    font-style: italic;
-    font-size: 120%;
-    font-family: monospace;
+    font-family:'Courier New', Courier, monospace;
 }
 #heatmap-controls {
     display: grid;
@@ -38,15 +177,14 @@ html, body {
 }
 #heatmap-controls div {
     padding:2px;
+    /* font-size: 10px; */
 }
 .img-heatmap {
     top:0;
+    width: 100%;
     left:0;
-    width:100%;
 }
 input[type=range] {
     width:100%;
-}
-label {
-    font-weight: bold;
+    height: 1.1em;
 }

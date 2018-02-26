@@ -4,14 +4,10 @@ const webpagetest = require('webpagetest');
 const heatmap = require('./heatmap');
 const admzip = require('adm-zip');
 
-const defaultServer = 'www.webpagetest.org';
-const wptAPIkey = '6d00ee2d01d64f87890cb0f5d724d0f6';
+require('dotenv').config();
 
-/* For submitting tests:
- * set screenshot size to full (probably new code in WPT-api)
- * set image quality to 100
- * set desktop resolution to something reasonable?
-*/
+const defaultServer = process.env.WPT_SERVER;
+const wptAPIkey = process.env.WPT_APIKEY;
 
 getStatus = function(testId) {
     return new Promise((resolve)=>{
@@ -31,7 +27,7 @@ submitTest = function(url,server=null,location=null,opts=null) {
         if (opts) {
             let iq = (opts.iq==undefined?100:opts.iq);
         }
-        wpt.runTest(url, {location:location,disableOptimization:true,jpegQuality:iq,video:true,key:wptAPIkey}, (err, data) => {
+        wpt.runTest(url, {location:location,disableOptimization:true,jpegQuality:iq,video:true,key:wptAPIkey,fullSizeVideo:true}, (err, data) => {
             console.log(err || data);
             if (err) throw new Error(err);
             return resolve(data);
@@ -62,12 +58,13 @@ getLocations = function(server) {
     })
 }
 
-createHeatmap = function(testId,testDir) {
+createHeatmap = function(testId,testDir,server=null) {
     return new Promise((resolve,reject) => {
         if (testDir==undefined) {
             let testDir = path.join('public','tests');
         }
-        const wpt = new webpagetest();
+        let serve = (server==null?defaultServer:server);
+        const wpt = new webpagetest(serve);
         
         wpt.getTestStatus(testId, {request: 12345}, (err,data) => {
             if (err) throw new Error(err);
