@@ -1,4 +1,4 @@
 public/tests/*
-!public/tests/index.html
+!public/tests/180226_CY_f4fc6b532ae2e9b9c4ee04188e0e2ca3/
 node_modules/
 .env

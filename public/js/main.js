@@ -48,6 +48,9 @@ function parseLocations(locationData,selectElem) {
             if (location.status == "OK") {
                 let opt = document.createElement('option');
                 opt.id = location.id;
+                if (opt.id == "Dulles") {
+                    opt.selected = "selected";
+                }
                 opt.text = location.Label;
                 let pendTests = location.PendingTests.Total;
                 if (pendTests > 5) {
@@ -292,13 +295,21 @@ const parseResults = function(data) {
 }
 
 const scrollyBudget = function() {
-    let current = parseInt(document.getElementById("heatmap-control-budget").value);
-    scrollBudget(10000,250)
+    let playPause = document.getElementById("heatmap-control-play");
+    if (window.heatmap.isScrolling) {
+        playPause.innerHTML = "▶"
+        window.heatmap.isScrolling = false;
+    } else {
+        window.heatmap.isScrolling = true;
+        playPause.innerHTML = "<b>|&nbsp;|</b>"
+        let current = parseInt(document.getElementById("heatmap-control-budget").value);
+        scrollBudget(10000,250);
+    }
 }
 const scrollBudget = function(end,current) {
-    console.log(end,current)
+    if (!window.heatmap.isScrolling) return;
     let interval = 100;
-    if (current < end) {
+    if (current <= end) {
         current += interval;
         document.getElementById("heatmap-control-budget").value = current;
         updateBudget();

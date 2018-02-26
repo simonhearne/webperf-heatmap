@@ -29,7 +29,15 @@ submitTest = function(url,server=null,location=null,opts=null) {
         if (opts) {
             let iq = (opts.iq==undefined?100:opts.iq);
         }
-        wpt.runTest(url, {location:location,disableOptimization:true,jpegQuality:iq,video:true,key:wptAPIkey,fullSizeVideo:true}, (err, data) => {
+        wpt.runTest(url, {
+            location:location,
+            disableOptimization:true,
+            jpegQuality:iq,
+            video:true,
+            key:wptAPIkey,
+            fullSizeVideo:true,
+            stopAtDocumentComplete: true
+        }, (err, data) => {
             console.log(err || data);
             if (err) throw new Error(err);
             return resolve(data);

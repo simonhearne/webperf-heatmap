@@ -21,7 +21,7 @@
             </div>
             <div id="heatmap-controls">
                 <div id="heatmap-controls-labels">
-                        <label id="heatmap-control-budget-label" for="heatmap-control-budget">Visual Budget: </label><br/>
+                        <label id="heatmap-control-budget-label" for="heatmap-control-budget"><span id="heatmap-control-play" data-playpause="play">►</span> Visual Budget: </label><br/>
                     <label id="heatmap-control-opacity-label" for="heatmap-control-opacity">Heatmap Opacity: </label><br/>
                     <label id="heatmap-control-gray-label" for="heatmap-control-gray">Screenshot Saturation: </label><br/>
                 </div>
@@ -52,7 +52,7 @@
                 document.getElementById("heatmap-control-opacity").addEventListener(eventListenerType,updateOpacity);
                 document.getElementById("heatmap-control-gray").addEventListener(eventListenerType,updateGrayscale);
                 document.getElementById("heatmap-control-budget").addEventListener(eventListenerType,updateBudget);
-                document.getElementById("heatmap-control-budget-label").addEventListener("click",scrollyBudget);
+                document.getElementById("heatmap-control-play").addEventListener("click",scrollyBudget);
                 
                 loadImages();
                 getTestInfo(window.heatmap.testId);
