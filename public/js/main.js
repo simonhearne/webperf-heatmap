@@ -215,6 +215,7 @@ const renderFrames = function() {
     finalimg.className="img-heatmap";
     finalimg.id = "img-heatmap-final-frame";
     finalimg.src = `../tests/${window.heatmap.testId}/final.jpg`;
+    finalimg.onload = setRatio;
     document.getElementById("heatmap-container").appendChild(finalimg);
     
     var heatmapOverlayContainer = document.createElement('div');
@@ -301,7 +302,7 @@ const scrollyBudget = function() {
         window.heatmap.isScrolling = false;
     } else {
         window.heatmap.isScrolling = true;
-        playPause.innerHTML = "<b>|&nbsp;|</b>"
+        playPause.innerHTML = "◾"
         let current = parseInt(document.getElementById("heatmap-control-budget").value);
         scrollBudget(10000,250);
     }
@@ -309,10 +310,17 @@ const scrollyBudget = function() {
 const scrollBudget = function(end,current) {
     if (!window.heatmap.isScrolling) return;
     let interval = 100;
-    if (current <= end) {
+    if (current <= (end - interval)) {
         current += interval;
         document.getElementById("heatmap-control-budget").value = current;
         updateBudget();
-        setTimeout(()=>{scrollBudget(end,current)},250);
+        setTimeout(()=>{scrollBudget(end,current)},150);
     }
+}
+
+const setRatio = function() {
+    let imgEl = document.getElementById("img-heatmap-final-frame");
+    let ratio = imgEl.naturalWidth / imgEl.naturalHeight;
+    let maxWidth = 800 * (ratio * 0.9);
+    document.getElementById("heatmap-container").style.maxWidth = maxWidth;
 }
