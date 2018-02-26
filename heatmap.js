@@ -39,7 +39,12 @@ const compareImages = function(testFrame,finalFramePixels,ms,outputPath,isFinal=
 const msFromFilename = function(filename) {
     let start = filename.indexOf("_")+1;
     let end = filename.indexOf(".")
-    return parseInt(filename.slice(start,end));
+    let result = parseInt(filename.slice(start,end))
+    if (end - start < 6) {
+        /* sometimes we get 1/10th seconds, sometimes 1/1000th */
+        result *= 100;
+    }
+    return result;
 }
 
 const imageSort = function(a,b) {

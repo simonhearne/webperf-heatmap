@@ -6,7 +6,7 @@ html,body,input,select,button {
 }
 html,body {
     line-height:1.4em;
-    background-color: rgba(0,0,0,0.05);
+    background-color: rgba(128,0,128,0.01);
 }
 body {
     padding:10px;
@@ -29,6 +29,10 @@ h1,h3 {
         font-size:24px;
     }
 }
+button#button-submit-id {
+    width: 22%;
+    min-width:100px;
+}
 #container {
     margin: 20px auto;
     padding: 10px 20px 16px 20px;
@@ -36,6 +40,12 @@ h1,h3 {
     box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
     background-color:white;
     border-radius:5px;
+}
+#footer {
+    font-size: 13px;
+    text-align: center;
+    padding-top: 5px;
+    margin-bottom: -5px;
 }
 .form-group {
     margin-top:5px;
@@ -96,6 +106,7 @@ input.narrow {
     margin-left:5px;
     margin-right:5px;
     width: 75%;
+    /* max-width: 75%; */
 }
 #status {
     border-radius: 5px;
@@ -104,7 +115,7 @@ input.narrow {
     font-family:'Courier New', Courier, monospace;
 }
 label {
-    font-weight:400;
+    font-weight: 300;
     font-size:15px;
 }
 #status.error {
@@ -149,11 +160,8 @@ label {
     position:relative;
     top:0;
     left:0;
-    /* width: 100px; */
-    /* height: 25vh; */
-    /* max-height: 800px; */
-    /* max-width: 960px; */
-    /* margin: 0 auto; */
+    width: 100%;
+    margin: 0 auto;
 }
 #heatmap-overlay-container {
     opacity:1;

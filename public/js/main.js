@@ -48,6 +48,9 @@ function parseLocations(locationData,selectElem) {
             if (location.status == "OK") {
                 let opt = document.createElement('option');
                 opt.id = location.id;
+                if (opt.id == "Dulles") {
+                    opt.selected = "selected";
+                }
                 opt.text = location.Label;
                 let pendTests = location.PendingTests.Total;
                 if (pendTests > 5) {
@@ -212,6 +215,7 @@ const renderFrames = function() {
     finalimg.className="img-heatmap";
     finalimg.id = "img-heatmap-final-frame";
     finalimg.src = `../tests/${window.heatmap.testId}/final.jpg`;
+    finalimg.onload = setRatio;
     document.getElementById("heatmap-container").appendChild(finalimg);
     
     var heatmapOverlayContainer = document.createElement('div');
@@ -284,24 +288,45 @@ const getTestInfo = function(test=null) {
 }
 
 const parseResults = function(data) {
+    let speedindex = parseInt(data.data.median.firstView.SpeedIndex);
     document.getElementById("test-url").innerHTML = data.data.testUrl;
     document.getElementById("test-from").innerHTML = data.data.from.replace(/<b>/gi,"").replace(/<\/b>/gi,"");
     let d = new Date(data.data.completed * 1000);
     document.getElementById("test-run-at").innerHTML = d.toLocaleString();
     document.getElementById("test-link").innerHTML = `<a href="${data.data.summary}" target="_blank">View on WPT</a>`;
+    if (!window.heatmap.budgetSet) {
+        console.log("SI:",speedindex);
+        document.getElementById("heatmap-control-budget").value=speedindex;
+        updateBudget();
+    }
 }
 
 const scrollyBudget = function() {
-    let current = parseInt(document.getElementById("heatmap-control-budget").value);
-    scrollBudget(10000,250)
+    let playPause = document.getElementById("heatmap-control-play");
+    if (window.heatmap.isScrolling) {
+        playPause.innerHTML = "▶"
+        window.heatmap.isScrolling = false;
+    } else {
+        window.heatmap.isScrolling = true;
+        playPause.innerHTML = "◾"
+        let current = parseInt(document.getElementById("heatmap-control-budget").value);
+        scrollBudget(10000,250);
+    }
 }
 const scrollBudget = function(end,current) {
-    console.log(end,current)
+    if (!window.heatmap.isScrolling) return;
     let interval = 100;
-    if (current < end) {
+    if (current <= (end - interval)) {
         current += interval;
         document.getElementById("heatmap-control-budget").value = current;
         updateBudget();
-        setTimeout(()=>{scrollBudget(end,current)},250);
+        setTimeout(()=>{scrollBudget(end,current)},150);
     }
+}
+
+const setRatio = function() {
+    let imgEl = document.getElementById("img-heatmap-final-frame");
+    let ratio = imgEl.naturalWidth / imgEl.naturalHeight;
+    let maxWidth = 800 * (ratio * 0.9);
+    document.getElementById("heatmap-container").style.maxWidth = maxWidth;
 }

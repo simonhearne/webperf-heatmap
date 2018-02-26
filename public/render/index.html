@@ -13,7 +13,7 @@
     <body>
         <div id="container">
             <div id="header">
-                <h1>Web Performance Heatmap Generator</h1>
+                <h1 id="home-link" class="clicky">Web Performance Heatmap Generator</a></h1>
                 <h3><span id="test-url"></span></h3>
                 <p class="subtitle"><span class="test-details" id="test-from"></span> on <span class="test-details" id="test-run-at"></span>. <span id="test-link"></span></p>
             </div>
@@ -21,7 +21,7 @@
             </div>
             <div id="heatmap-controls">
                 <div id="heatmap-controls-labels">
-                        <label id="heatmap-control-budget-label" for="heatmap-control-budget">Visual Budget: </label><br/>
+                        <label id="heatmap-control-budget-label" for="heatmap-control-budget"><span id="heatmap-control-play" data-playpause="play">►</span> Visual Budget: </label><br/>
                     <label id="heatmap-control-opacity-label" for="heatmap-control-opacity">Heatmap Opacity: </label><br/>
                     <label id="heatmap-control-gray-label" for="heatmap-control-gray">Screenshot Saturation: </label><br/>
                 </div>
@@ -36,6 +36,9 @@
                     <span class="heatmap-control-value" id="heatmap-control-gray-value"></span><br/>
                 </div>
             </div>
+            <div id="footer">
+                Made by <a href="https://twitter.com/simonhearne">Simon</a> • Fork on <a href="https://github.com/simonhearne/webperf-heatmap">GitHub</a>
+            </div>
         </div>
         <script>
             window.onload = () => {
@@ -46,13 +49,21 @@
                     alert("No test parameter provided, maybe a bad link?\nSending you back to the homepage.");
                     window.location.href = window.location.href.substring(0,window.location.href.lastIndexOf("/")).replace("render","");
                 }
-                var budget = (getParameterByName('budget')==undefined?5000:getParameterByName('budget'));
+                /* if budget param is set - use that, else 5000. Later we'll update it with the speedindex value */
+                let budget = 5000;
+                window.heatmap.budgetSet = true;
+                if (getParameterByName('budget') != undefined) {
+                    budget = parseInt(getParameterByName('budget'));
+                } else {
+                    window.heatmap.budgetSet = false;
+                }
                 document.getElementById("heatmap-control-budget").value = parseInt(budget);
                 var eventListenerType = (live_updates?'input':'change');
                 document.getElementById("heatmap-control-opacity").addEventListener(eventListenerType,updateOpacity);
                 document.getElementById("heatmap-control-gray").addEventListener(eventListenerType,updateGrayscale);
                 document.getElementById("heatmap-control-budget").addEventListener(eventListenerType,updateBudget);
-                document.getElementById("heatmap-control-budget-label").addEventListener("click",scrollyBudget);
+                document.getElementById("heatmap-control-play").addEventListener("click",scrollyBudget);
+                document.getElementById("home-link").addEventListener("click",()=>{window.location = "/" });
                 
                 loadImages();
                 getTestInfo(window.heatmap.testId);

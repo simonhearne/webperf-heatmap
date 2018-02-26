@@ -4,8 +4,10 @@ const webpagetest = require('webpagetest');
 const heatmap = require('./heatmap');
 const admzip = require('adm-zip');
 
-require('dotenv').config();
-
+const {NODE_ENV} = process.env;
+if (NODE_ENV == "development") {
+    require('dotenv').config();
+}
 const defaultServer = process.env.WPT_SERVER;
 const wptAPIkey = process.env.WPT_APIKEY;
 
@@ -27,7 +29,15 @@ submitTest = function(url,server=null,location=null,opts=null) {
         if (opts) {
             let iq = (opts.iq==undefined?100:opts.iq);
         }
-        wpt.runTest(url, {location:location,disableOptimization:true,jpegQuality:iq,video:true,key:wptAPIkey,fullSizeVideo:true}, (err, data) => {
+        wpt.runTest(url, {
+            location:location,
+            disableOptimization:true,
+            jpegQuality:iq,
+            video:true,
+            key:wptAPIkey,
+            fullSizeVideo:true,
+            stopAtDocumentComplete: true
+        }, (err, data) => {
             console.log(err || data);
             if (err) throw new Error(err);
             return resolve(data);
