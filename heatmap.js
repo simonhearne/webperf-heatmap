@@ -89,7 +89,7 @@ module.exports = function generateHeatmapFrames(imagePath,outputPath) {
                 let isFinal = (i==frames.length-1?true:false);
                 var imageFn = path.join(imagePath,frames[i]);
                 var ms = msFromFilename(frames[i]);
-                frameJSON.push({time:ms,frame:path.join(outputPath,`${ms}.png`)});
+                frameJSON.push({time:ms,frame:path.join(outputPath.replace('public',''),`${ms}.png`)});
                 comparisons.push(compareImages(imageFn,finalFramePixels,ms,outputPath,isFinal));
             }
             fs.writeFileSync(path.join(outputPath,'frames.json'),JSON.stringify(frameJSON));

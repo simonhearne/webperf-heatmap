@@ -1,0 +1,78 @@
+<html>
+    <head>
+        <title>Web Performance Heatmap Generator</title>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="stylesheet" href="../css/main.css"/>
+        <script src="js/main.js" defer></script>
+    </head>
+    <body>
+        <div id="container">
+            <div id="header">
+                <h1>Web Performance Heatmap Generator</h1>
+                <h3>Visualize when key elements on your page become visible. <a href="#">Read about it</a> or <a href="#">see an example</a>.</h3>
+            </div>
+            <div id="form">
+                <form id="submission-form">
+                    <div class="form-group">
+                        <label for="url">URL to test:</label>
+                        <input type="url" id="url" name="url" class="wide"/>
+                    </div>
+                    <div class="form-group hidden">
+                        <label for="wpt-host">WebPageTest server:</label>
+                        <input name="wpt-host" id="wpt-host" type="text" type="url" value="www.webpagetest.org"></input>
+                        <label for="wpt-key">WebPageTest api key:</label>
+                        <input name="wpt-key" id="wpt-key" type="text"></input>
+                    </div>
+                    <div class="form-group">
+                        <label for="wpt-location">WebPageTest location:</label>
+                        <select name="wpt-location" id="wpt-location"></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="wpt-browser">WebPageTest browser:</label>
+                        <select name="wpt-browser" id="wpt-browser"></select>
+                    </div>
+                    <div class="form-group-container">
+                        <div class="form-group half-col">
+                            <label for="wpt-connection">Connection Speed: </label>
+                            <select disabled name="wpt-connection" id="wpt-connection">
+                                <option>Cable</option>
+                            </select>
+                        </div>
+                        <div class="form-group half-col">
+                            <label for="wpt-viewport">Viewport Size: </label>
+                            <select disabled name="wpt-viewport" id="wpt-viewport">
+                                <option>Device Default</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <button type="button" class="button-lg" id="button-submit">Generate heatmap!</button>
+                    </div>
+                    <div class="form-group">
+                        <label for="wpt-test-id" id="wpt-id-toggle" class="clicky">Already got a test ID?</label>
+                        <div id="wpt-test-id-group" class="form-group hidden">
+                        <input type="text" class="narrow" id="wpt-test-id" name="wpt-test-id"></input>
+                        <button type="button" id="button-submit-id" style="float:right;">Use this ID</button>
+                        </div>
+                    </div>
+                </form>
+            <div id="status"></div>
+            </div>
+        </div>
+        <script>
+            window.onload = () => {
+                window.wpt={};
+                document.getElementById("wpt-host").addEventListener('blur',getLocations);
+                document.getElementById("wpt-location").addEventListener('change',updateBrowsers);
+                getLocations();
+                document.getElementById("button-submit").addEventListener("click", submitTest);
+                document.getElementById("button-submit-id").addEventListener("click", useExistingTest);
+                document.getElementById("wpt-id-toggle").addEventListener("click", ()=>{document.getElementById("wpt-test-id-group").classList.toggle("hidden")});
+            }
+        </script>
+    </body>
+</html>

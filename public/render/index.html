@@ -1,0 +1,62 @@
+<html>
+    <head>
+        <title>Web Performance Heatmap</title>
+        <title>Web Performance Heatmap Generator</title>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="stylesheet" href="../css/main.css"/>
+        <script src="../js/main.js" defer></script>
+    </head>
+    <body>
+        <div id="container">
+            <div id="header">
+                <h1>Web Performance Heatmap Generator</h1>
+                <h3><span id="test-url"></span></h3>
+                <p class="subtitle"><span class="test-details" id="test-from"></span> on <span class="test-details" id="test-run-at"></span>. <span id="test-link"></span></p>
+            </div>
+            <div id="heatmap-container">
+            </div>
+            <div id="heatmap-controls">
+                <div id="heatmap-controls-labels">
+                        <label id="heatmap-control-budget-label" for="heatmap-control-budget">Visual Budget: </label><br/>
+                    <label id="heatmap-control-opacity-label" for="heatmap-control-opacity">Heatmap Opacity: </label><br/>
+                    <label id="heatmap-control-gray-label" for="heatmap-control-gray">Screenshot Saturation: </label><br/>
+                </div>
+                <div id="heatmap-controls-sliders">
+                    <input id="heatmap-control-budget" name="heatmap-control-budget" type="range" min="100" max="60000" step="100"></input>
+                    <input id="heatmap-control-opacity" name="heatmap-control-opacity" type="range" min="0" max="1" step="0.01" value="0.95"></input>
+                    <input id="heatmap-control-gray" name="heatmap-control-gray" type="range" min="0" max="100" step="10" value="10"></input>
+                </div>
+                <div id="heatmap-controls-values">
+                        <span class="heatmap-control-value" id="heatmap-control-budget-value"></span><br/>
+                    <span class="heatmap-control-value" id="heatmap-control-opacity-value"></span><br/>
+                    <span class="heatmap-control-value" id="heatmap-control-gray-value"></span><br/>
+                </div>
+            </div>
+        </div>
+        <script>
+            window.onload = () => {
+                var live_updates = true;
+                window.heatmap = {testId:null,frames:[]};
+                window.heatmap.testId = getParameterByName('test');
+                if (window.heatmap.testId==undefined) {
+                    alert("No test parameter provided, maybe a bad link?\nSending you back to the homepage.");
+                    window.location.href = window.location.href.substring(0,window.location.href.lastIndexOf("/")).replace("render","");
+                }
+                var budget = (getParameterByName('budget')==undefined?5000:getParameterByName('budget'));
+                document.getElementById("heatmap-control-budget").value = parseInt(budget);
+                var eventListenerType = (live_updates?'input':'change');
+                document.getElementById("heatmap-control-opacity").addEventListener(eventListenerType,updateOpacity);
+                document.getElementById("heatmap-control-gray").addEventListener(eventListenerType,updateGrayscale);
+                document.getElementById("heatmap-control-budget").addEventListener(eventListenerType,updateBudget);
+                document.getElementById("heatmap-control-budget-label").addEventListener("click",scrollyBudget);
+                
+                loadImages();
+                getTestInfo(window.heatmap.testId);
+            }
+        </script>
+    </body>
+</html>

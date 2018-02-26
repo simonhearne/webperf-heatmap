@@ -4,6 +4,7 @@
   "description": "Generates heatmap images from WebPageTest filmstrips",
   "main": "index.js",
   "scripts": {
+    "dev": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "@SimonHearne",
@@ -14,12 +15,19 @@
   },
   "dependencies": {
     "adm-zip": "^0.4.7",
+    "body-parser": "^1.18.2",
+    "compression": "^1.7.2",
+    "dotenv": "^5.0.0",
+    "express": "^4.16.2",
     "fs": "0.0.1-security",
     "fs-extra": "^5.0.0",
     "get-pixels": "^3.3.0",
     "ndarray": "^1.0.18",
     "ndarray-fill": "^1.0.2",
+    "nodemon": "^1.15.1",
+    "save-dev": "^2.0.0",
     "save-pixels": "^2.3.4",
+    "url": "^0.11.0",
     "webpagetest": "git+https://git@github.com/simonhearne/webpagetest-api.git",
     "zeros": "^1.0.0"
   }
