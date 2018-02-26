@@ -7,7 +7,10 @@ const bodyParser = require('body-parser');
 const compression = require('compression');
 const url = require('url');
 
-require('dotenv').config();
+const {NODE_ENV} = process.env;
+if (NODE_ENV == "development") {
+    require('dotenv').config();
+}
 
 const defaultServer = process.env.WPT_SERVER;
 

@@ -4,8 +4,10 @@ const webpagetest = require('webpagetest');
 const heatmap = require('./heatmap');
 const admzip = require('adm-zip');
 
-require('dotenv').config();
-
+const {NODE_ENV} = process.env;
+if (NODE_ENV == "development") {
+    require('dotenv').config();
+}
 const defaultServer = process.env.WPT_SERVER;
 const wptAPIkey = process.env.WPT_APIKEY;
 
