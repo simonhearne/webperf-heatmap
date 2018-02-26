@@ -1,3 +1,4 @@
-tests/
+public/tests/*
+!public/tests/index.html
 node_modules/
 .env
