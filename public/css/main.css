@@ -6,7 +6,7 @@ html,body,input,select,button {
 }
 html,body {
     line-height:1.4em;
-    background-color: rgba(0,0,0,0.05);
+    background-color: rgba(128,0,128,0.01);
 }
 body {
     padding:10px;
@@ -28,6 +28,10 @@ h1,h3 {
     h1 {
         font-size:24px;
     }
+}
+button#button-submit-id {
+    width: 22%;
+    min-width:100px;
 }
 #container {
     margin: 20px auto;
@@ -102,6 +106,7 @@ input.narrow {
     margin-left:5px;
     margin-right:5px;
     width: 75%;
+    /* max-width: 75%; */
 }
 #status {
     border-radius: 5px;
