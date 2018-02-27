@@ -304,7 +304,7 @@ const parseResults = function(data) {
 const scrollyBudget = function() {
     let playPause = document.getElementById("heatmap-control-play");
     if (window.heatmap.isScrolling) {
-        playPause.innerHTML = "▶"
+        playPause.innerHTML = "►"
         window.heatmap.isScrolling = false;
     } else {
         window.heatmap.isScrolling = true;
