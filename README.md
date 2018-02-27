@@ -1,6 +1,6 @@
 # webperf-heatmap
 
-![screenshot.png]
+![screenshot](screenshot.png)
 
 Runs a webpagetest performance test and creates a heatmap based on the video frames.
 [Available online](https://webperf-heatmap.herokuapp.com/) thanks to Heroku.
