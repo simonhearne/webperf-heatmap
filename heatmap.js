@@ -9,6 +9,7 @@ var result;
 
 const compareImages = function(testFrame,finalFramePixels,ms,outputPath,isFinal=false,threshold=0) {
     return new Promise((resolve,reject) => {
+        let sameCount = 0;
         getPixels(testFrame, function(err, testPixels) {
             if (err) {
                 return reject(err);
@@ -24,13 +25,14 @@ const compareImages = function(testFrame,finalFramePixels,ms,outputPath,isFinal=
                                 result.set(x,y,1,200);
                                 result.set(x,y,2,0);
                                 result.set(x,y,3,255);
+                                sameCount++;
                                 break diffcheck;
                             }
                         }
                     }
                 }
                 saveArray(result,path.join(outputPath,`${ms}.png`));
-                resolve();
+                return resolve({ms:ms,sameCount:sameCount});
             }
         })
     })
@@ -90,16 +92,25 @@ module.exports = function generateHeatmapFrames(imagePath,outputPath) {
             result = zeros([finalFramePixels.shape[0],finalFramePixels.shape[1],4]);
             let comparisons = [];
             frameJSON = []
+            frameCompletions = []
             for (let i in frames) {
                 let isFinal = (i==frames.length-1?true:false);
                 var imageFn = path.join(imagePath,frames[i]);
                 var ms = msFromFilename(frames[i]);
                 frameJSON.push({time:ms,frame:path.join(outputPath.replace('public',''),`${ms}.png`)});
-                comparisons.push(compareImages(imageFn,finalFramePixels,ms,outputPath,isFinal));
+                comparisons.push(
+                    compareImages(imageFn,finalFramePixels,ms,outputPath,isFinal)
+                );
             }
-            fs.writeFileSync(path.join(outputPath,'frames.json'),JSON.stringify(frameJSON));
             fs.createReadStream(finalFrame).pipe(fs.createWriteStream(path.join(outputPath,'final.jpg')));
-            Promise.all(comparisons).then(()=>{
+            Promise.all(comparisons).then((frameCompletions)=>{
+                let maxPixels = finalFramePixels.shape[0]*finalFramePixels.shape[1];
+                for (var i in frameCompletions) {
+                    frameCompletion = frameCompletions[i];
+                    let perc = (frameCompletion.sameCount / maxPixels) * 100;
+                    frameJSON.filter((frame)=>{return frame.time==frameCompletion.ms})[0].visuallyComplete = perc;
+                }
+                fs.writeFileSync(path.join(outputPath,'frames.json'),JSON.stringify(frameJSON));
                 resolve(true);
             })
         })

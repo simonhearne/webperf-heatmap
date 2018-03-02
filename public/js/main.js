@@ -126,7 +126,6 @@ function generateHeatmap(testId) {
 }
 
 function parseStatus(data,testId) {
-    console.log(data);
     if (data.statusCode == 100 || data.statusCode == 101) {
         /* test is queued / testing */
         statusUpdate({"status":"info","message":data.statusText+"<br/>Test ID: <em>"+testId+"</em>"});
@@ -171,7 +170,6 @@ function submitTest() {
         }) 
             .then(response => response.json())
             .then((data) => {
-                console.log(data);
                 if (data.statusCode !== 200) {
                     statusUpdate({"status":"error","message":`Test has not been submitted, error message: ${data.statusText}`});    
                     return false;
@@ -188,22 +186,19 @@ function submitTest() {
     return false;
 }
 
-
 const getParameterByName = function(name, url) {
     if (!url) url = window.location.href;
-    name = name.replace(/[\[\]]/g, "\\$&");
-    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-        results = regex.exec(url);
-    if (!results) return null;
-    if (!results[2]) return '';
-    return decodeURIComponent(results[2].replace(/\+/g, " "));
+    let cURL = new URL(url)
+    return cURL.searchParams.get(name);
 }
+
 const loadImages = function () {
     let frameJSONurl = `../tests/${window.heatmap.testId}/frames.json`;
     fetch(frameJSONurl)
         .then((response)=>{return response.json()})
         .then((data)=>{
             window.heatmap.frames = data;
+            getUrl();
             renderFrames();
             updateOpacity();
             updateGrayscale();
@@ -232,41 +227,50 @@ const renderFrames = function() {
 };
 
 const updateOpacity = function() {
-    let opacity = document.getElementById('heatmap-control-opacity').value;
-    document.getElementById("heatmap-overlay-container").style.opacity = opacity;
-    document.getElementById("heatmap-control-opacity-value").innerHTML = `${parseInt(opacity*100)}%`;
+    window.heatmap.opacity = document.getElementById('heatmap-control-opacity').value;
+    document.getElementById("heatmap-overlay-container").style.opacity = window.heatmap.opacity;
+    document.getElementById("heatmap-control-opacity-value").innerHTML = `${parseInt(window.heatmap.opacity*100)}%`;
+    setUrl();
 };
 const updateGrayscale = function() {
-    let gray = 100-document.getElementById('heatmap-control-gray').value;
-    document.getElementById("img-heatmap-final-frame").style.filter = `grayscale(${gray}%)`;
-    document.getElementById("heatmap-control-gray-value").innerHTML = `${100-gray}%`;
+    window.heatmap.gray = 100-document.getElementById('heatmap-control-gray').value;
+    document.getElementById("img-heatmap-final-frame").style.filter = `grayscale(${window.heatmap.gray}%)`;
+    document.getElementById("heatmap-control-gray-value").innerHTML = `${100-window.heatmap.gray}%`;
+    setUrl();
 };
 const updateBudget = function() {
     window.heatmap.budget = parseInt(document.getElementById("heatmap-control-budget").value);
+    if (window.heatmap.budget < window.heatmap.minimum) {
+        window.heatmap.minimum = window.heatmap.budget;
+    }
     document.getElementById("heatmap-control-budget-value").innerHTML = `${window.heatmap.budget.toLocaleString()}ms`;
-    window.heatmap.maxTime = window.heatmap.budget;
-    window.heatmap.minTime = window.heatmap.budget/2;
+    
+    let visuallyComplete = 0;
+    for (var i in window.heatmap.frames) {
+        visuallyComplete = window.heatmap.frames[i].visuallyComplete;
+        if (window.heatmap.frames[i].time > window.heatmap.budget) {
+            break;
+        }
+    }
+    document.getElementById("heatmap-visuallycomplete").innerHTML = parseInt(visuallyComplete);
     updateColors();
+    setUrl();
 }
 
 const updateColors = function() {
     for (var i in window.heatmap.frames) {
         var elem = document.getElementById(`img-heatmap-overlay-${window.heatmap.frames[i].time}`);
-        var hue = hueFromBudget(window.heatmap.budget,window.heatmap.frames[i].time);
+        var hue = hueFromBudget(window.heatmap.frames[i].time);
         elem.style.filter = `hue-rotate(${hue}deg) saturate(1000%)`;
     }
 }
-const hueFromBudget = function(budget,time) {
+const hueFromBudget = function(time) {
     let maxHue = -60;
     let minHue = 60;
-    if (time < window.heatmap.minTime) {
-        hue = minHue;
-    } else if (time >= window.heatmap.maxTime) {
-        hue = maxHue;
-    } else {
-        var f = (time-window.heatmap.minTime)/(window.heatmap.maxTime-window.heatmap.minTime);
-        hue = minHue - f * (minHue-maxHue);
-    }
+    var f = (time-window.heatmap.minimum)/(window.heatmap.budget-window.heatmap.minimum);
+    hue = minHue - f * (minHue-maxHue);
+    if (hue > minHue) hue = minHue;
+    if (hue < maxHue) hue = maxHue;
     return hue;
 }
 
@@ -294,11 +298,6 @@ const parseResults = function(data) {
     let d = new Date(data.data.completed * 1000);
     document.getElementById("test-run-at").innerHTML = d.toLocaleString();
     document.getElementById("test-link").innerHTML = `<a href="${data.data.summary}" target="_blank">View on WPT</a>`;
-    if (!window.heatmap.budgetSet) {
-        console.log("SI:",speedindex);
-        document.getElementById("heatmap-control-budget").value=speedindex;
-        updateBudget();
-    }
 }
 
 const scrollyBudget = function() {
@@ -308,19 +307,23 @@ const scrollyBudget = function() {
         window.heatmap.isScrolling = false;
     } else {
         window.heatmap.isScrolling = true;
-        playPause.innerHTML = "◾"
-        let current = parseInt(document.getElementById("heatmap-control-budget").value);
+        playPause.innerHTML = "◾";
         scrollBudget(10000,250);
     }
 }
 const scrollBudget = function(end,current) {
-    if (!window.heatmap.isScrolling) return;
+    if (!window.heatmap.isScrolling) {
+        document.getElementById("heatmap-control-play").innerHTML = "►";
+        return;
+    }
     let interval = 100;
     if (current <= (end - interval)) {
         current += interval;
         document.getElementById("heatmap-control-budget").value = current;
         updateBudget();
         setTimeout(()=>{scrollBudget(end,current)},150);
+    } else {
+        document.getElementById("heatmap-control-play").innerHTML = "►";
     }
 }
 
@@ -329,4 +332,29 @@ const setRatio = function() {
     let ratio = imgEl.naturalWidth / imgEl.naturalHeight;
     let maxWidth = 800 * (ratio * 0.9);
     document.getElementById("heatmap-container").style.maxWidth = maxWidth;
+}
+
+const setUrl = function() {
+    let cURL = new URL(window.location.href)
+    cURL.searchParams.set('b',window.heatmap.budget);
+    cURL.searchParams.set('o',window.heatmap.opacity);
+    cURL.searchParams.set('s',window.heatmap.gray);
+    cURL.searchParams.set('m',window.heatmap.minimum);
+    window.history.replaceState(null,null,cURL.toString());
+}
+
+const getUrl = function() {
+    let cURL = new URL(window.location.href)
+    window.heatmap.budget = (cURL.searchParams.get('b')==null?5000:cURL.searchParams.get('b'));
+    window.heatmap.opacity = (cURL.searchParams.get('o')==null?0.95:cURL.searchParams.get('o'));
+    window.heatmap.gray = (cURL.searchParams.get('s')==null?50:cURL.searchParams.get('s'));
+    window.heatmap.minimum = (cURL.searchParams.get('m')==null?window.heatmap.budget/2:parseInt(cURL.searchParams.get('m')));
+    setUrl();
+    setSliders();
+}
+
+const setSliders = function() {
+    document.getElementById("heatmap-control-opacity").value = window.heatmap.opacity;
+    document.getElementById('heatmap-control-gray').value = 100 - window.heatmap.gray;
+    document.getElementById("heatmap-control-budget").value = window.heatmap.budget;
 }

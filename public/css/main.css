@@ -6,7 +6,7 @@ html,body,input,select,button {
 }
 html,body {
     line-height:1.4em;
-    background-color: rgba(128,0,128,0.01);
+    background-color: rgba(0,0,0,0.01);
 }
 body {
     padding:10px;
@@ -54,6 +54,15 @@ button#button-submit-id {
 .form-subgroup {
     width: 100%;
     /* float:right; */
+}
+.form-elem-left {
+    float: left;
+    clear: both;
+}
+.form-right {
+    overflow: hidden;
+    display: block;
+    padding: 0 10px;
 }
 .clicky {
     cursor: pointer;
